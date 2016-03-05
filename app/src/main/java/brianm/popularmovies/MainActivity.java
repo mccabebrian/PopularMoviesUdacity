@@ -34,16 +34,28 @@ public class MainActivity extends AppCompatActivity {
   String sortBy = "popularity.desc";
   ImageAdapter ia;
 
+  static final String SORT_SELECTION = "sortBySelection";
+  static final String MOVIES_LIST = "movies";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    if (savedInstanceState != null) {
+      sortBy = savedInstanceState.getString(SORT_SELECTION);
+      movies = (ArrayList<MovieObject>) savedInstanceState.getSerializable(MOVIES_LIST);
+      initialiseGrid(movies);
+    }
+    else{
+      sortBy = "popularity.desc";
+    }
+
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     Spinner spinner = (Spinner) findViewById(R.id.sort_spinner);
 
-    sortBy = "popularity.desc";
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
       R.array.sort_by_array, android.R.layout.simple_spinner_item);
+
 
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinner.setAdapter(adapter);
@@ -52,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
           sortBy = "popularity.desc";
+
         } else {
           sortBy = "vote_average.desc";
+          movies = new ArrayList<>();
         }
         new HTTPManager().execute();
       }
@@ -65,7 +79,15 @@ public class MainActivity extends AppCompatActivity {
     });
 
     setSupportActionBar(toolbar);
-    movies = new ArrayList<>();
+
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    savedInstanceState.putString(SORT_SELECTION, sortBy);
+    savedInstanceState.putSerializable(MOVIES_LIST, movies);
+
+    super.onSaveInstanceState(savedInstanceState);
   }
 
   public ArrayList<MovieObject> getMovies(){
@@ -74,13 +96,13 @@ public class MainActivity extends AppCompatActivity {
 
   public class HTTPManager extends AsyncTask {
 
-    private final String TMDB_API_KEY = "10d8adc03da9c93c6678f24e5c120aad";
+    private final String TMDB_API_KEY = "";
     private static final String DEBUG_TAG = "TMDBQueryManager";
 
     @Override
     protected void onPreExecute() {
-      progress = ProgressDialog.show(MainActivity.this, "Please wait...",
-        "Loading Movies", true);
+      //progress = ProgressDialog.show(MainActivity.this, "Please wait...",
+        //"Loading Movies", true);
       movies = new ArrayList<>();
     }
 
@@ -96,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostExecute(Object result) {
       Log.d("test string", result.toString());
+      //progress.dismiss();
       initialiseGrid(movies);
-      progress.dismiss();
     }
 
     public ArrayList<MovieObject> searchIMDB() throws IOException {
@@ -105,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("http://api.themoviedb.org/3/discover/movie?sort_by=" + sortBy + "&");
       stringBuilder.append("api_key=" + TMDB_API_KEY);
+      Log.e("sb", stringBuilder.toString());
       URL url = new URL(stringBuilder.toString());
       InputStream stream = null;
       try {
