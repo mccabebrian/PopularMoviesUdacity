@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
   public class HTTPManager extends AsyncTask {
 
-    private final String TMDB_API_KEY = "";
+    private final String TMDB_API_KEY = "9fc5e9741ff75ca6ca76e3ee9bf9b0a5";
     private static final String DEBUG_TAG = "TMDBQueryManager";
 
     @Override
@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
           String overview = jsonMovieObject.getString("overview");
           String voteAverage = jsonMovieObject.getString("vote_average");
           String releaseDate = jsonMovieObject.getString("release_date");
-          MovieObject movieBuilder = new MovieObject(jsonMovieObject.getString("poster_path"), originalTitle, overview, voteAverage, releaseDate);
+          int id = jsonMovieObject.getInt("id");
+          MovieObject movieBuilder = new MovieObject(jsonMovieObject.getString("poster_path"), originalTitle, overview, voteAverage, releaseDate, id);
 
           movies.add(movieBuilder);
         }
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
           MovieObject mo = getMovies().get(position);
+          Log.e("ReviewId:", ""+mo.getId());
           Intent intent = new Intent(MainActivity.this, MovieDetails.class);
           intent.putExtra("Array", mo);
           startActivity(intent);

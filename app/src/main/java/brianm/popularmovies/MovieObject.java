@@ -11,14 +11,15 @@ public class MovieObject implements Serializable{
   String overview;
   String voteAverage;
   String releaseDate;
+  int id;
 
-  public MovieObject(String imagePath, String originalTitle, String overview, String voteAverage, String releaseDate){
+  public MovieObject(String imagePath, String originalTitle, String overview, String voteAverage, String releaseDate, int id){
     this.imagePath = imagePath;
     this.originalTitle = originalTitle;
     this.overview = overview;
     this.voteAverage = voteAverage;
     this.releaseDate = releaseDate;
-
+    this.id = id;
   }
 
   public String getImagePath(){
@@ -59,5 +60,13 @@ public class MovieObject implements Serializable{
 
   public void setVoteAverage(String voteAverage) {
     this.voteAverage = voteAverage;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 }

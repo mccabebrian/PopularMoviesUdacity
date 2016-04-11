@@ -64,7 +64,11 @@ public class ImageAdapter extends BaseAdapter {
 
     ImageView imageView;
     imageView = (ImageView) v.getTag(R.id.picture);
-    Picasso.with(mContext).load("http://image.tmdb.org/t/p/w185/" + movies.get(position).getImagePath()).into(imageView);
+    Picasso.with(mContext)
+      .load("http://image.tmdb.org/t/p/w185/" + movies.get(position).getImagePath())
+      .placeholder(R.drawable.noimg)
+      .error(R.drawable.noimg)
+      .into(imageView);
     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
     imageView.setAdjustViewBounds(true);
     return v;
