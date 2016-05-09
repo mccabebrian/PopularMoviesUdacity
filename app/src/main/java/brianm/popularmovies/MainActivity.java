@@ -65,9 +65,13 @@ public class MainActivity extends AppCompatActivity {
         if (position == 0) {
           sortBy = "popularity.desc";
 
-        } else {
+        } else if(position == 1){
           sortBy = "vote_average.desc";
           movies = new ArrayList<>();
+        }
+        else{
+          loadFavorites();
+          return;
         }
         new HTTPManager().execute();
       }
@@ -88,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
     savedInstanceState.putSerializable(MOVIES_LIST, movies);
 
     super.onSaveInstanceState(savedInstanceState);
+  }
+
+  public void loadFavorites(){
+    MovieSQLiteHelper movieSQLiteHelper = new MovieSQLiteHelper(this);
+    initialiseGrid(movieSQLiteHelper.getAllFavorites());
   }
 
   public ArrayList<MovieObject> getMovies(){
@@ -117,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(Object result) {
-      Log.d("test string", result.toString());
       //progress.dismiss();
       initialiseGrid(movies);
     }
@@ -177,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String stringify(InputStream stream) throws IOException, UnsupportedEncodingException {
-      Reader reader = null;
+      Reader reader;
       reader = new InputStreamReader(stream, "UTF-8");
       BufferedReader bufferedReader = new BufferedReader(reader);
       return bufferedReader.readLine();
@@ -192,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
     ia = new ImageAdapter(MainActivity.this, movies);
     gridView.clearChoices();
     gridView.setAdapter(ia);
+    this.movies = movies;
     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -13,6 +13,10 @@ public class MovieObject implements Serializable{
   String releaseDate;
   int id;
 
+  public MovieObject(){
+
+  }
+
   public MovieObject(String imagePath, String originalTitle, String overview, String voteAverage, String releaseDate, int id){
     this.imagePath = imagePath;
     this.originalTitle = originalTitle;

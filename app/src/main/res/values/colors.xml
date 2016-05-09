@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#007DC3</color>
+    <color name="colorPrimaryDark">#007DC3</color>
     <color name="colorAccent">#FF4081</color>
     <color name="appBackground">#191919</color>
-    <color name="titleBackground">#3F51B5</color>
+    <color name="titleBackground">#007DC3</color>
+    <color name="disabledButton">#d7f1ff</color>
     <color name="titleText">#fff</color>
 </resources>

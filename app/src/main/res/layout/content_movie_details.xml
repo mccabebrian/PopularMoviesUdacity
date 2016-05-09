@@ -52,15 +52,68 @@
                 android:layout_height="0dp"
                 android:id="@+id/rating"
                 android:layout_weight="1"/>
+            <Button
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#007DC3"
+                android:textColor="#fff"
+                android:id="@+id/favorites"
+                android:text="Add To Favorites"/>
         </LinearLayout>
 
 
     </LinearLayout>
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/detailsBody"
+        android:paddingLeft="20dp"
+        android:paddingStart="20dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:id="@+id/trailerLayout"
+        android:layout_below="@+id/detailsBody">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trailers"
+            android:text="Play Trailer"
+            android:paddingTop="@dimen/activity_vertical_margin"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/trailerLayout"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/overview"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="10dp"
+        android:layout_below="@+id/overview">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reviews:"
+            android:id="@+id/reviewTitleLabel"/>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reviewTitleLabel"
+            android:paddingTop="10dp"
+            android:id="@+id/reviews">
+        </ListView>
+    </RelativeLayout>
 
 </RelativeLayout>
