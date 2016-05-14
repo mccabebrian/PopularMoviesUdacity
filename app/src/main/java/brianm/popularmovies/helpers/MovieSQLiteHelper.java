@@ -1,4 +1,4 @@
-package brianm.popularmovies;
+package brianm.popularmovies.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+
+import brianm.popularmovies.models.MovieObject;
 
 /**
  * Created by brianm on 18/04/2016.
@@ -37,7 +37,6 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase db) {
-    // SQL statement to create book table
     String CREATE_FAVORITES_TABLE = "CREATE TABLE favorites ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "movieId TEXT, " + "imagePath TEXT, " +
       "originalTitle TEXT, " + "overview TEXT, " + "voteAverage TEXT, " + "releaseDate TEXT )";
     db.execSQL(CREATE_FAVORITES_TABLE);
@@ -45,7 +44,6 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    // drop books table if already exists
     db.execSQL("DROP TABLE IF EXISTS " + table_FAVORITES);
     String CREATE_FAVORITES_TABLE = "CREATE TABLE favorites ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "movieId TEXT, " + "imagePath TEXT, " +
       "originalTitle TEXT, " + "overview TEXT, " + "voteAverage TEXT, " + "releaseDate TEXT )";
@@ -54,10 +52,8 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
   }
 
   public void createFavorite(MovieObject movie) {
-    // get reference of the BookDB database
     SQLiteDatabase db = this.getWritableDatabase();
 
-    // make values to be inserted
     ContentValues values = new ContentValues();
     values.put(movie_ID, movie.getId());
     values.put(movie_IMAGE_PATH, movie.getImagePath());
@@ -66,21 +62,17 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
     values.put(movie_VOTE_AVERAGE, movie.getVoteAverage());
     values.put(movie_RELEASE_DATE, movie.getReleaseDate());
 
-    // insert book
     db.insert(table_FAVORITES, null, values);
 
-    // close database transaction
     db.close();
   }
 
   public MovieObject readFavorite(int id) {
-    // get reference of the BookDB database
     SQLiteDatabase db = this.getReadableDatabase();
 
-    // get book query
     Cursor cursor = db.rawQuery( "select * from " + table_FAVORITES + " where " + movie_ID +" = " + id, null );
     MovieObject movieObject = new MovieObject();
-    // if results !=null, parse the first one
+
     if (cursor != null && cursor.moveToFirst()) {
         movieObject.setId(Integer.parseInt(cursor.getString(0)));
         cursor.close();
@@ -95,14 +87,11 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
   public ArrayList<MovieObject> getAllFavorites() {
     ArrayList<MovieObject> movies = new ArrayList<>();
 
-    // select book query
     String query = "SELECT  * FROM " + table_FAVORITES;
 
-    // get reference of the BookDB database
     SQLiteDatabase db = this.getWritableDatabase();
     Cursor cursor = db.rawQuery(query, null);
 
-    // parse all results
     MovieObject movieObject;
     if (cursor.moveToFirst()) {
       do {
@@ -114,21 +103,18 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
         movieObject.setVoteAverage(cursor.getString(5));
         movieObject.setReleaseDate(cursor.getString(6));
 
-        // Add book to books
         movies.add(movieObject);
       } while (cursor.moveToNext());
     }
     return movies;
   }
 
-  public int updateBook(MovieObject movieObject) {
+  public int updateMovie(MovieObject movieObject) {
 
-    // get reference of the BookDB database
     SQLiteDatabase db = this.getWritableDatabase();
 
-    // make values to be inserted
     ContentValues values = new ContentValues();
-    values.put("movieId", movieObject.getId()); // get title
+    values.put("movieId", movieObject.getId());
 
     // update
     int i = db.update(table_FAVORITES, values, favorites_ID + " = ?", new String[] { String.valueOf(movieObject.getId()) });
@@ -137,13 +123,10 @@ public class MovieSQLiteHelper extends SQLiteOpenHelper {
     return i;
   }
 
-  // Deleting single book
-  public void deleteBook(MovieObject movieObject) {
+  public void deleteMovie(MovieObject movieObject) {
 
-    // get reference of the BookDB database
     SQLiteDatabase db = this.getWritableDatabase();
 
-    // delete book
     db.delete(table_FAVORITES, favorites_ID + " = ?", new String[] { String.valueOf(movieObject.getId()) });
     db.close();
   }

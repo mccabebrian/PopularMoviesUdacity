@@ -1,16 +1,15 @@
-package brianm.popularmovies;
+package brianm.popularmovies.fragments;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -34,7 +33,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieDetails extends Activity {
+import brianm.popularmovies.R;
+import brianm.popularmovies.adapters.ReviewAdapter;
+import brianm.popularmovies.helpers.MovieSQLiteHelper;
+import brianm.popularmovies.models.MovieObject;
+import brianm.popularmovies.models.ReviewObject;
+
+public class MovieDetails extends Fragment {
 
   TextView title;
   ImageView movieImage;
@@ -45,86 +50,116 @@ public class MovieDetails extends Activity {
   Button favoriteButton;
   MovieObject mo;
   MovieSQLiteHelper movieSQLiteHelper;
-  Context context;
   Button trailer;
   static ArrayList<String> keys;
-
+  ListView reviewList;
 
   public ArrayList<ReviewObject> reviews;
 
+  static final String KEYS = "keys";
+  static final String REVIEWS = "reviews";
+
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+  public void onActivityCreated(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_movie_details);
+    if (savedInstanceState != null) {
+      keys = savedInstanceState.getStringArrayList(KEYS);
+      reviews = (ArrayList<ReviewObject>) savedInstanceState.getSerializable(REVIEWS);
+    }
+  }
 
-    movieSQLiteHelper = new MovieSQLiteHelper(this);
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    if (savedInstanceState != null){
+    }
+    View view = inflater.inflate(R.layout.activity_movie_details, container, false);
 
-    context = this;
+    title = (TextView) view.findViewById(R.id.titleText);
+    movieImage = (ImageView) view.findViewById(R.id.thumbnail);
+    release = (TextView) view.findViewById(R.id.release);
+    rating = (TextView) view.findViewById(R.id.rating);
+    overview = (TextView) view.findViewById(R.id.overview);
+    trailer = (Button) view.findViewById(R.id.trailers);
+    reviewList = (ListView) view.findViewById(R.id.reviews);
+    favoriteButton = (Button) view.findViewById(R.id.favorites);
 
-    title = (TextView) findViewById(R.id.titleText);
-    movieImage = (ImageView) findViewById(R.id.thumbnail);
-    release = (TextView) findViewById(R.id.release);
-    rating = (TextView) findViewById(R.id.rating);
-    overview = (TextView) findViewById(R.id.overview);
-    favoriteButton = (Button) findViewById(R.id.favorites);
-    trailer = (Button) findViewById(R.id.trailers);
+    Bundle bundle=getArguments();
 
-    mo = (MovieObject) getIntent().getSerializableExtra("Array");
+    if(bundle != null) {
+      MovieObject movieObject = (MovieObject) bundle.getSerializable("mo");
 
-    Log.e("Overview", mo.getOverview());
+      setMovieObject(movieObject);
+    }
 
-    initialiseFavoriteButton();
+    return view;
+  }
 
-    title.setText(mo.getOriginalTitle());
-    Picasso.with(this)
-      .load("http://image.tmdb.org/t/p/w185/" + mo.getImagePath())
-      .into(movieImage);
+  public void setMovieObject(MovieObject movieObject){
 
-    movieId = mo.getId();
-    release.setText(mo.getReleaseDate());
-    rating.setText(mo.getVoteAverage() + "/10");
-    overview.setText(mo.getOverview());
-    new HTTPManager().execute();
-    new TrailerManager().execute();
+    movieSQLiteHelper = new MovieSQLiteHelper(getActivity());
 
-    trailer.setEnabled(false);
+    this.mo = movieObject;
 
+    if(!(mo == null)) {
+      initialiseFavoriteButton();
 
+      title.setText(mo.getOriginalTitle());
+      Picasso.with(getActivity())
+        .load("http://image.tmdb.org/t/p/w185/" + mo.getImagePath())
+        .into(movieImage);
+
+      movieId = mo.getId();
+      release.setText(mo.getReleaseDate());
+      rating.setText(mo.getVoteAverage() + "/10");
+      overview.setText(mo.getOverview());
+      new HTTPManager().execute();
+      new TrailerManager().execute();
+
+      trailer.setEnabled(false);
+    }
   }
 
   public void watchYoutubeVideo(String key){
     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + key)));
-
   }
 
   public void initialiseFavoriteButton(){
+
     MovieObject movieObject = movieSQLiteHelper.readFavorite(mo.getId());
     if(movieObject != null){
       favoriteButton.setEnabled(false);
-      favoriteButton.setBackgroundColor(Color.parseColor("#d7f1ff"));
+      disableFavoriteButton();
     }
     else{
       favoriteButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           createFavorite();
-          favoriteButton.setEnabled(false);
-          favoriteButton.setBackgroundColor(Color.parseColor("#d7f1ff"));
+          disableFavoriteButton();
         }
       });
     }
   }
 
+  public void disableFavoriteButton(){
+    favoriteButton.setEnabled(false);
+    favoriteButton.setBackgroundColor(Color.parseColor("#d7f1ff"));
+  }
+
+  public void disableTrailerButton(){
+    trailer.setEnabled(false);
+  }
+
   public void createFavorite(){
-
     movieSQLiteHelper.createFavorite(mo);
-    Log.e("dbsize : ", " " + movieSQLiteHelper.getAllFavorites().size());
-    List<MovieObject> list = (List<MovieObject>) movieSQLiteHelper.getAllFavorites();
-    for(int i = 0; i<list.size(); i++){
-      Log.e("Movie title", list.get(i).getOriginalTitle());
-    }
+  }
 
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    savedInstanceState.putStringArrayList(KEYS, keys);
+    savedInstanceState.putSerializable(REVIEWS, reviews);
+
+    super.onSaveInstanceState(savedInstanceState);
   }
 
   public class HTTPManager extends AsyncTask {
@@ -134,8 +169,6 @@ public class MovieDetails extends Activity {
 
     @Override
     protected void onPreExecute() {
-      //progress = ProgressDialog.show(MainActivity.this, "Please wait...",
-      //"Loading Movies", true);
       reviews = new ArrayList<>();
     }
 
@@ -151,16 +184,12 @@ public class MovieDetails extends Activity {
 
     @Override
     protected void onPostExecute(Object result) {
-      //progress.dismiss();
-      ListView reviewList = (ListView) findViewById(R.id.reviews);
-
-      ListAdapter reviewAdapter = new ReviewAdapter(context, R.layout.review_list_item, reviews);
+      ListAdapter reviewAdapter = new ReviewAdapter(getActivity(), R.layout.review_list_item, reviews);
 
       reviewList.setAdapter(reviewAdapter);
     }
 
     public ArrayList<ReviewObject> searchIMDB() throws IOException {
-      // Build URL
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("http://api.themoviedb.org/3/movie/"+movieId+"/reviews?");
       stringBuilder.append("api_key=" + TMDB_API_KEY);
@@ -173,7 +202,7 @@ public class MovieDetails extends Activity {
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
         conn.setRequestMethod("GET");
-        conn.addRequestProperty("Accept", "application/json"); // Required to get TMDB to play nicely.
+        conn.addRequestProperty("Accept", "application/json");
         conn.setDoInput(true);
         conn.connect();
 
@@ -200,7 +229,6 @@ public class MovieDetails extends Activity {
           String id = jsonReviewObject.getString("id");
           String author = jsonReviewObject.getString("author");
           String content = jsonReviewObject.getString("content");
-          Log.e("content", content);
           String url = jsonReviewObject.getString("url");
           ReviewObject reviewObject = new ReviewObject(id, content, url, author);
 
@@ -228,8 +256,6 @@ public class MovieDetails extends Activity {
 
     @Override
     protected void onPreExecute() {
-      //progress = ProgressDialog.show(MainActivity.this, "Please wait...",
-      //"Loading Movies", true);
     }
 
     @Override
@@ -244,19 +270,21 @@ public class MovieDetails extends Activity {
 
     @Override
     protected void onPostExecute(Object result) {
-      //progress.dismiss();
       keys = (ArrayList<String>) result;
       trailer.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          watchYoutubeVideo(keys.get(0));
+          if(keys != null && (keys.size() > 0)) {
+            watchYoutubeVideo(keys.get(0));
+          }else{
+            disableTrailerButton();
+          }
         }
       });
       trailer.setEnabled(true);
     }
 
     public ArrayList<String> searchIMDB() throws IOException {
-      // Build URL
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("http://api.themoviedb.org/3/movie/"+movieId+"/videos?");
       stringBuilder.append("api_key=" + TMDB_API_KEY);
@@ -264,12 +292,11 @@ public class MovieDetails extends Activity {
       URL url = new URL(stringBuilder.toString());
       InputStream stream = null;
       try {
-        // Establish a connection
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
         conn.setRequestMethod("GET");
-        conn.addRequestProperty("Accept", "application/json"); // Required to get TMDB to play nicely.
+        conn.addRequestProperty("Accept", "application/json");
         conn.setDoInput(true);
         conn.connect();
 

@@ -1,20 +1,21 @@
-package brianm.popularmovies;
+package brianm.popularmovies.adapters;
 
 /**
  * Created by brianm on 20/02/2016.
  */
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import brianm.popularmovies.R;
+import brianm.popularmovies.models.MovieObject;
 
 public class ImageAdapter extends BaseAdapter {
   private Context mContext;

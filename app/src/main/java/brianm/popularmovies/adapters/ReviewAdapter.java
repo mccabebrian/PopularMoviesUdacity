@@ -1,4 +1,4 @@
-package brianm.popularmovies;
+package brianm.popularmovies.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import brianm.popularmovies.R;
+import brianm.popularmovies.models.ReviewObject;
 
 /**
  * Created by brianm on 17/04/2016.

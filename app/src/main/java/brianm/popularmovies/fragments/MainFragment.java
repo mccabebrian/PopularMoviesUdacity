@@ -1,13 +1,13 @@
-package brianm.popularmovies;
+package brianm.popularmovies.fragments;
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
@@ -27,35 +27,45 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+import brianm.popularmovies.interfaces.OnMovieChanged;
+import brianm.popularmovies.R;
+import brianm.popularmovies.adapters.ImageAdapter;
+import brianm.popularmovies.helpers.MovieSQLiteHelper;
+import brianm.popularmovies.models.MovieObject;
+
+public class MainFragment extends Fragment {
 
   public ArrayList<MovieObject> movies;
-  ProgressDialog progress;
   String sortBy = "popularity.desc";
   ImageAdapter ia;
+  GridView gridView;
 
   static final String SORT_SELECTION = "sortBySelection";
   static final String MOVIES_LIST = "movies";
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onActivityCreated(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+
     if (savedInstanceState != null) {
       sortBy = savedInstanceState.getString(SORT_SELECTION);
       movies = (ArrayList<MovieObject>) savedInstanceState.getSerializable(MOVIES_LIST);
       initialiseGrid(movies);
     }
-    else{
-      sortBy = "popularity.desc";
-    }
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    Spinner spinner = (Spinner) findViewById(R.id.sort_spinner);
+  }
 
-    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+    View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+    gridView = (GridView) view.findViewById(R.id.grid_view);
+
+    Spinner spinner = (Spinner) view.findViewById(R.id.sort_spinner);
+
+    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
       R.array.sort_by_array, android.R.layout.simple_spinner_item);
-
 
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinner.setAdapter(adapter);
@@ -82,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    setSupportActionBar(toolbar);
-
+    return view;
   }
+
 
   @Override
   public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void loadFavorites(){
-    MovieSQLiteHelper movieSQLiteHelper = new MovieSQLiteHelper(this);
+    MovieSQLiteHelper movieSQLiteHelper = new MovieSQLiteHelper(getActivity());
     initialiseGrid(movieSQLiteHelper.getAllFavorites());
   }
 
@@ -110,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPreExecute() {
-      //progress = ProgressDialog.show(MainActivity.this, "Please wait...",
-        //"Loading Movies", true);
       movies = new ArrayList<>();
     }
 
@@ -144,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
         conn.setRequestMethod("GET");
-        conn.addRequestProperty("Accept", "application/json"); // Required to get TMDB to play nicely.
+        conn.addRequestProperty("Accept", "application/json");
         conn.setDoInput(true);
         conn.connect();
 
@@ -193,11 +201,11 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void initialiseGrid(ArrayList<MovieObject> movies){
-    GridView gridView = (GridView) findViewById(R.id.grid_view);
+
     if(ia != null){
       ia.notifyDataSetChanged();
     }
-    ia = new ImageAdapter(MainActivity.this, movies);
+    ia = new ImageAdapter(getActivity(), movies);
     gridView.clearChoices();
     gridView.setAdapter(ia);
     this.movies = movies;
@@ -205,10 +213,9 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
           MovieObject mo = getMovies().get(position);
-          Log.e("ReviewId:", ""+mo.getId());
-          Intent intent = new Intent(MainActivity.this, MovieDetails.class);
-          intent.putExtra("Array", mo);
-          startActivity(intent);
+          Log.e("ReviewId:", "" + mo.getId());
+        OnMovieChanged listener = (OnMovieChanged) getActivity();
+        listener.OnSelectionChanged(mo);
       }
     });
   }
