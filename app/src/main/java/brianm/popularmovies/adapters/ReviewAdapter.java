@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import brianm.popularmovies.R;
-import brianm.popularmovies.models.ReviewObject;
+import brianm.popularmovies.activities.ReviewObject;
 
 /**
  * Created by brianm on 17/04/2016.

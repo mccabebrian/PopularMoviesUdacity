@@ -9,7 +9,6 @@ import brianm.popularmovies.R;
 import brianm.popularmovies.fragments.MainFragment;
 import brianm.popularmovies.fragments.MovieDetails;
 import brianm.popularmovies.interfaces.OnMovieChanged;
-import brianm.popularmovies.models.MovieObject;
 
 public class MainActivity extends Activity implements OnMovieChanged {
 

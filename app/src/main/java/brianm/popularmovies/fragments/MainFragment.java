@@ -1,7 +1,6 @@
 package brianm.popularmovies.fragments;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,7 +30,7 @@ import brianm.popularmovies.interfaces.OnMovieChanged;
 import brianm.popularmovies.R;
 import brianm.popularmovies.adapters.ImageAdapter;
 import brianm.popularmovies.helpers.MovieSQLiteHelper;
-import brianm.popularmovies.models.MovieObject;
+import brianm.popularmovies.activities.MovieObject;
 
 public class MainFragment extends Fragment {
 

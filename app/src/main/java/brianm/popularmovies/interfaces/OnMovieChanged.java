@@ -1,6 +1,6 @@
 package brianm.popularmovies.interfaces;
 
-import brianm.popularmovies.models.MovieObject;
+import brianm.popularmovies.activities.MovieObject;
 
 /**
  * Created by brianm on 13/05/2016.

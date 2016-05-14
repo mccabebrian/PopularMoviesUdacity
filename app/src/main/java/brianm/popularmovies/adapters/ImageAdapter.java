@@ -15,7 +15,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import brianm.popularmovies.R;
-import brianm.popularmovies.models.MovieObject;
+import brianm.popularmovies.activities.MovieObject;
 
 public class ImageAdapter extends BaseAdapter {
   private Context mContext;

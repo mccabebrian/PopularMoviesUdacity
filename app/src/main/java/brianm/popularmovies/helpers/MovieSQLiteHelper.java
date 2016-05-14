@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
-import brianm.popularmovies.models.MovieObject;
+import brianm.popularmovies.activities.MovieObject;
 
 /**
  * Created by brianm on 18/04/2016.

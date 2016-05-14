@@ -31,13 +31,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import brianm.popularmovies.R;
 import brianm.popularmovies.adapters.ReviewAdapter;
 import brianm.popularmovies.helpers.MovieSQLiteHelper;
-import brianm.popularmovies.models.MovieObject;
-import brianm.popularmovies.models.ReviewObject;
+import brianm.popularmovies.activities.MovieObject;
+import brianm.popularmovies.activities.ReviewObject;
 
 public class MovieDetails extends Fragment {
 
