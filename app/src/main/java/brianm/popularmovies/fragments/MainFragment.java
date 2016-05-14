@@ -115,7 +115,7 @@ public class MainFragment extends Fragment {
 
   public class HTTPManager extends AsyncTask {
 
-    private final String TMDB_API_KEY = "9fc5e9741ff75ca6ca76e3ee9bf9b0a5";
+    private final String TMDB_API_KEY = "";
     private static final String DEBUG_TAG = "TMDBQueryManager";
 
     @Override
